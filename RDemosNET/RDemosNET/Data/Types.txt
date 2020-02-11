@@ -1,0 +1,73 @@
+﻿ID	Name
+1	Compraventa de Inmueble
+2	Arrendamiento de Inmueble
+3	Compraventa de Bien Mueble
+4	Arrendamiento de Bien Mueble
+5	Contrato de Trabajo
+6	Contrato de Prestación de Servicios
+7	Constitución de Sociedad
+8	Aumento de Capital
+9	Disminución de Capital
+10	Modificación de Administración
+11	Modificación de Objeto Social
+12	Modificación de Razón Social
+13	Fusión de Sociedad
+14	Transformación de Sociedad
+15	División de Sociedad
+16	Poder General
+17	Poder Especial
+18	Poder Judicial
+19	Acta de Sesión de Directorio
+20	Contrato de Construcción
+21	Contrato Marco de Factoring
+22	Instrumento Privado
+23	Escritura Pública
+24	Protocolización
+26	Inscripción CBR
+28	Compraventa de Acciónes
+29	Cesión de Derechos Sociales
+30	Promesa de Compraventa de Inmueble
+31	Contrato de confidencialidad
+32	Promesa de Arrendamiento de Inmueble
+33	Promesa de Compraventa de Acciónes
+34	Pacto de Acciónistas
+35	Disolución de Sociedad
+36	Contrato de Forward
+37	Subarrendamiento de Inmueble
+38	Arrendamiento con Opción de Compra de Inmueble
+39	Arrendamiento con Opción de Compra de Bien Mueble
+40	Promesa de Compraventa de Bien Mueble
+41	Constitución de Hipoteca
+42	Constitución de Prenda
+43	Contrato de apertura de Crédito
+44	Contrato de Mutuo
+45	Cesión de Créditos
+46	Alzamiento de Prenda
+47	Alzamiento de Hipoteca
+48	cancelación de Precio
+49	Constitución de servidumbre
+50	Extracto de Constitución de Sociedad
+51	Extracto de Aumento de Capital
+52	Extracto de Cesión de Derechos Sociales
+53	Extracto de Disminución de Capital
+54	Extracto de Disolución de Sociedad
+55	Extracto de División de Sociedad
+56	Extracto de Fusión de Sociedad
+57	Extracto de Modificación de Administración
+58	Extracto de Modificación de Razón Social
+64	Extracto de Transformación de Sociedad
+65	Póliza de Seguro
+67	Compraventa de Derechos de Agua
+73	propuesta de Póliza de Seguro
+75	propuesta de Endoso de Póliza de Seguro
+85	Endoso de Póliza de Seguro
+86	Modificación de Duración de Sociedad
+87	Modificación de Domicilio de Sociedad
+88	Modificación de Distribución de Utilidades
+89	Novación
+90	Suscripción de Acciones
+91	Cesión de Contrato de Arrendamiento
+92	Saneamiento
+93	Finiquito
+94	Liquidación de Sociedad
+96	Fianza y Codeuda Solidaria

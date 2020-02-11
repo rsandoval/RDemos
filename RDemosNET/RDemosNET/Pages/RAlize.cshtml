@@ -1,0 +1,51 @@
+﻿@page
+@model RDemosNET.RAlizeModel
+@{
+
+    ViewData["Title"] = "R:Alize | Demostración de Entendimiento de Lenguaje Humano";
+}
+
+
+<div id="main" class="wrapper style1">
+    <div class="container">
+
+
+        <!-- Main -->
+        <header class="major">
+            <h2>Demostración de R:Alize</h2>
+            <p>Entendimiento &amp; Inteligencia de Lenguaje</p>
+        </header>
+        <div class="row 150%">
+            <div class="6u 12u$(medium)">
+
+                <!-- Sidebar -->
+                <section id="sidebar">
+                    <section>
+                        <h3>Referencia a procesar</h3>
+                        <form enctype="multipart/form-data" method="post">
+                            <dl>
+                                <dd>
+                                    <textarea name="txtContents" id="txtContents" placeholder="Pegue el comentario aquí..." rows="6"></textarea>
+                                </dd>
+                                <dd>
+                                    <input id="cmdProcess" type="submit" class="button special" value="Interpretar" asp-page-handler="ProcessDocument"/>
+                                    <input id="cmdRandomSample" type="submit" value="Ejemplo Aleatorio" asp-page-handler="RandomSample"/>
+                                </dd>
+                            </dl>
+                        </form>
+                    </section>
+                </section>
+
+            </div>
+            <div class="6u$ 12u$(medium) important(medium)">
+
+                <!-- Content -->
+                <section id="content">
+                    <h3>Análisis de Comentario</h3>
+                    <blockquote>@Model.CommentContents</blockquote>
+                    <p>@Model.CommentDescription</p>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

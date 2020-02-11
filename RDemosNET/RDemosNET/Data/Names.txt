@@ -1,0 +1,25 @@
+﻿PREFIXES:
+comparecen por una parte
+señor 
+don
+dona
+sra
+srta
+señora
+senorita
+representada por
+, entre
+entre la sociedad
+SUFFIXES:
+,
+.
+;
+RUT
+cedula
+chilen
+casad
+abogad
+representada por
+en adelante
+del giro
+para

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDemosNET", "RDemosNET\RDemosNET.csproj", "{01993166-DF3E-4E53-A298-7AEFEB44CE1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01993166-DF3E-4E53-A298-7AEFEB44CE1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01993166-DF3E-4E53-A298-7AEFEB44CE1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01993166-DF3E-4E53-A298-7AEFEB44CE1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01993166-DF3E-4E53-A298-7AEFEB44CE1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {48CA8F12-8F24-4CCF-AE95-60E177004FB4}
+	EndGlobalSection
+EndGlobal
