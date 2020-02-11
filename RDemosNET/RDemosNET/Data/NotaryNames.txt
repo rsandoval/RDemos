@@ -1,0 +1,15 @@
+﻿PREFIXES:
+ante mi
+ante don
+ante doña
+notaria
+notario don
+notario
+notario publico de Santiago, doña 
+notario publico de Santiago, don 
+notaria de Santiago, don
+notaria de Santiago, doña
+SUFFIXES:
+, notario
+notario
+,
