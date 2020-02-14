@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 using RDemosNET.Models;
 
@@ -12,7 +12,7 @@ namespace RDemosNET
 {
     public class RAlizeModel : PageModel
     {
-        private IHostingEnvironment _environment;
+        private IHostEnvironment _environment;
 
         public IActionResult OnGet()
         {
@@ -20,7 +20,7 @@ namespace RDemosNET
             return Page();
         }
 
-        public RAlizeModel(IHostingEnvironment environment)
+        public RAlizeModel(IHostEnvironment environment)
         {
             _environment = environment;
         }
@@ -34,7 +34,7 @@ namespace RDemosNET
         {
             CommentCharacterizer characterizer = new CommentCharacterizer(txtContents);
             CommentContents = txtContents;
-            CommentDescription = characterizer.GetCommentDescription();
+            CommentDescription = characterizer.GetDescription();
         }
         public void OnPostRandomSample()
         {
@@ -43,7 +43,7 @@ namespace RDemosNET
             string strComment = samples[randomNum.Next(samples.Length)];
             CommentContents = strComment;
             CommentCharacterizer characterizer = new CommentCharacterizer(strComment);
-            CommentDescription = characterizer.GetCommentDescription();
+            CommentDescription = characterizer.GetDescription();
         }
     }
 }

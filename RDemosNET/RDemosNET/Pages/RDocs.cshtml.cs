@@ -12,8 +12,6 @@ namespace RDemosNET
     public class RDocsModel : PageModel
     {
         private string _resultMessage = "Documento a mostrar";
-        // private readonly RDocsDemo.NET.Data.RDocsDemoNETContext _context;
-        private IWebHostBuilder _environment;
 
         public IActionResult OnGet()
         {
@@ -26,22 +24,9 @@ namespace RDemosNET
             return Page();
         }
 
-//        public DemoModel(RDocsDemo.NET.Data.RDocsDemoNETContext context, IHostingEnvironment environment)
-//        {
-//            _environment = environment;
-//            _context = context;
-//        }
-
-        public RDocsModel() //IWebHostBuilder environment)
+        public RDocsModel() 
         {
-            // _environment = environment;
         }
-        /*public IList<Document> Document { get; set; }
-
-        public async Task OnGetAsync()
-        {
-            Document = await _context.Document.ToListAsync();
-        }*/
 
         [BindProperty]
         public IFormFile FileForUpload { get; set; }
