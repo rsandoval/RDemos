@@ -6,7 +6,9 @@ namespace DemoModelBuilder
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ModelBuilder builder = new ModelBuilder();
+
+            builder.Build();
         }
     }
 }

@@ -90,7 +90,7 @@ namespace RDemosNET.Models
         }
 
 
-        public string GetCommentDescription()
+        public string GetDescription()
         {
             string sentiment = GetSentiment();
             string emotion = GetEmotion();
