@@ -10,10 +10,15 @@ namespace RDemosNET.Models
     {
         const string _modelFolder = @"brain";
         private static string _appPath => Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-        private static string _messageModelPath => Path.Combine(_modelFolder, "CustomerCommentModel.zip");
+        private static string _intentModelPath => Path.Combine(_modelFolder, "CustomerCommentModel.zip");
+        private static string _emotionModelPath => Path.Combine(_modelFolder, "EmotionModel.zip");
 
         private MLContext _mlContext;
         private PredictionEngine<CustomerMessage, MessageTypePrediction> _messagePredEngine;
+        private PredictionEngine<Comment, EmotionPrediction> _commentPredEngine;
+
+        public string Intent { get; set; }
+        public string Emotion { get; set; }
 
         public string RawContents { get; set; }
 
@@ -22,9 +27,11 @@ namespace RDemosNET.Models
             RawContents = contents;
 
             _mlContext = new MLContext(seed: 0);
-            ITransformer loadedModel = _mlContext.Model.Load(_messageModelPath, out var sentimentModelInputSchema);
-            _messagePredEngine = _mlContext.Model.CreatePredictionEngine<CustomerMessage, MessageTypePrediction>(loadedModel);
+            ITransformer intentLoadedModel = _mlContext.Model.Load(_intentModelPath, out var intentModelInputSchema);
+            _messagePredEngine = _mlContext.Model.CreatePredictionEngine<CustomerMessage, MessageTypePrediction>(intentLoadedModel);
 
+            ITransformer emotionLoadedModel = _mlContext.Model.Load(_emotionModelPath, out var emotionModelInputSchema);
+            _commentPredEngine = _mlContext.Model.CreatePredictionEngine<Comment, EmotionPrediction>(emotionLoadedModel);
         }
 
         public string GetIntention()
@@ -32,12 +39,31 @@ namespace RDemosNET.Models
             CustomerMessage comment = new CustomerMessage() { Contents = RawContents };
             var prediction = _messagePredEngine.Predict(comment);
 
-            return prediction.TypeCode;
+            return prediction.TypeCode.ToLower();
+        }
+
+        public string GetEmotion()
+        {
+            Comment comment = new Comment() { Contents = RawContents };
+            var prediction = _commentPredEngine.Predict(comment);
+
+            switch (prediction.Emotion)
+            {
+                case "0": return "alegría";
+                case "1": return "pena";
+                case "2": return "miedo";
+                case "3": return "disgusto";
+                case "4": return "sorpresa";
+                case "5": return "enojo";
+            }
+
+            return "-";
         }
 
         public string GetDescription()
         {
             string intention = GetIntention();
+            string emotion = GetEmotion();
 
             Random randomGen = new Random(DateTime.Now.Millisecond);
             string[] startingPhrases = { "OK. Clarísimo. Veo que es un comentario ", "Este comentario se siente como ", "De todo lo que leo, interpreto que hay un sentimiento ", "Este comentario se siente " };
@@ -50,7 +76,7 @@ namespace RDemosNET.Models
             else if (RawContents.Length > 320)
                 description = "Bien completo el comentario. Entiendo que se se trata de ";
 
-            return description + intention;
+            return description + intention + " de un cliente con " + emotion;
         }
 
     }
