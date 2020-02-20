@@ -68,7 +68,7 @@ namespace RDemosNET.Models
             return resultString;
         }
 
-        public string RemovePunctuation(string text)
+        public string RemovePunctuation(string text, string symbolsToKeep = "")
         {
             string[] punctuations = { ".", ",", ";", ":", "!", "?", "¿", "¡", "\"", "'", "-", "/", "+", "*", "\n", "\r", "\t", "\\", "&", "@", "#", "$", "%", "°", "~", "}", "{", "(", ")", "[", "]", "_", "<", ">", "“", "”" };
 
@@ -76,7 +76,12 @@ namespace RDemosNET.Models
             resultString = " " + RemoveTildes(text) + "   ";
 
             foreach (string punctuation in punctuations)
+            {
+                if (!String.IsNullOrEmpty(symbolsToKeep) && symbolsToKeep.Contains(punctuation))
+                    continue;
+
                 resultString = resultString.Replace(punctuation, " ");
+            }
 
             return resultString;
         }

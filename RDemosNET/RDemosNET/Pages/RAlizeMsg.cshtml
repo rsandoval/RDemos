@@ -43,7 +43,7 @@
                 <section id="content">
                     <h3>Análisis de Mensaje de Cliente</h3>
                     <blockquote>@Model.MessageContents</blockquote>
-                    <p>@Model.MessageDescription</p>
+                    <p>@Html.Raw(@Model.MessageDescription)</p>
                 </section>
             </div>
         </div>

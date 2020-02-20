@@ -1,0 +1,51 @@
+﻿@page
+@model RDemosNET.RDocsCVModel
+@{
+    ViewData["Title"] = "R:Docs | Demostración de procesamiento de CVs";
+}
+
+
+<div id="main" class="wrapper style1">
+    <div class="container">
+
+
+        <!-- Main -->
+        <header class="major">
+            <h2>Demostración de R:Docs para RRHH</h2>
+            <p>Tecnología Cognitiva Avanzada para Entendimiento de Contenido Documental</p>
+        </header>
+        <div class="row 150%">
+            <div class="4u 12u$(medium)">
+
+                <!-- Sidebar -->
+                <section id="sidebar">
+                    <section>
+                        <h3>Documento único</h3>
+                        <form enctype="multipart/form-data" method="post">
+                            <dl>
+                                <dd>
+                                    <input type="file" asp-for="FileForUpload" />
+                                </dd>
+                                <dd>
+                                    Elemento de experiencia a buscar
+                                    <input type="text" id="txtExperience" placeholder="Indique aquí el área de experiencia que requiere evaluar (ej: liderazgo)" />
+                                </dd>
+                            </dl>
+                            <input asp-page-handler="Upload" class="button alternative" type="submit" value="Interpretar CV" />
+                        </form>
+                    </section>
+                </section>
+
+            </div>
+            <div class="8u$ 12u$(medium) important(medium)">
+
+                <!-- Content -->
+                <section id="content">
+                    <h3>Análisis de Documento</h3>
+                    <p>@Html.Raw(@Model.ResultMessage)</p>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -18,6 +18,7 @@ namespace RDemosNET.Models
         private PredictionEngine<Comment, EmotionPrediction> _commentPredEngine;
 
         public string Intent { get; set; }
+        public string MessageObject { get; set; }
         public string Emotion { get; set; }
 
         public string RawContents { get; set; }
@@ -30,21 +31,65 @@ namespace RDemosNET.Models
             ITransformer intentLoadedModel = _mlContext.Model.Load(_intentModelPath, out var intentModelInputSchema);
             _messagePredEngine = _mlContext.Model.CreatePredictionEngine<CustomerMessage, MessageTypePrediction>(intentLoadedModel);
 
+            Intent = GetIntent();
+            MessageObject = GetMessageObject();
+
             ITransformer emotionLoadedModel = _mlContext.Model.Load(_emotionModelPath, out var emotionModelInputSchema);
             _commentPredEngine = _mlContext.Model.CreatePredictionEngine<Comment, EmotionPrediction>(emotionLoadedModel);
+
+            Emotion = GetEmotion();
         }
 
-        public string GetIntention()
+        public string GetIntent()
         {
             CustomerMessage comment = new CustomerMessage() { Contents = RawContents };
             var prediction = _messagePredEngine.Predict(comment);
 
-            return prediction.TypeCode.ToLower();
+            string strIntent = prediction.TypeCode.ToString().ToLower();
+
+            if (strIntent.EndsWith("ar"))
+                strIntent = strIntent.Replace("ar", "ación");
+
+            return strIntent;
+        }
+
+        public string GetMessageObject()
+        {
+            TextNormalizer textNormalizer = TextNormalizer.GetInstance();
+            string strContents = textNormalizer.CleanString(RawContents);
+            
+            string strObject = "";
+
+            if (strContents.Contains("sim ") || strContents.Contains("simcard")) strObject += "simcard ";
+            if (strContents.Contains("bolsa ") || strContents.Contains("agregar")) strObject += "bolsa internet ";
+            if (strContents.Contains("buzon")) strObject += "buzón de voz ";
+            if (strContents.Contains("costo") && strContents.Contains("salida")) strObject += "costo de salida ";
+            if (strContents.Contains("sva")) strObject += "datos y SVA ";
+            if (strContents.Contains("desvio")) strObject += "desvío de llamadas ";
+            if (strContents.Contains("equipo")) strObject += "equipo ";
+            if (strContents.Contains("privado")) strObject += "id privado ";
+            if (strContents.Contains("gameloft") || strContents.Contains("game loft")) strObject += "gameloft ";
+            if (strContents.Contains("game")) strObject += "juego ";
+            if (strContents.Contains("conferencia")) strObject += "conferencia ";
+            if (strContents.Contains("plan") && !strContents.Contains("plan de dato")) strObject += "plan ";
+            if (strContents.Contains("plan de dato")) strObject += "plan de datos ";
+            if (strContents.Contains("llamada")) strObject += "llamada ";
+            if (strContents.Contains("razon social")) strObject += "razón social ";
+            if (strContents.Contains("llamada espera")) strObject += "llamada en espera ";
+            if (strContents.Contains(" sm ")) strObject += "SMS ";
+            if (strContents.Contains("roaming")) strObject += "roaming ";
+            if (strContents.Contains("trafico internacional") || strContents.Contains("distancia internacional") || strContents.Contains(" ldi ")) strObject += "tráfico internacional ";
+            if (strContents.Contains("bam ")) strObject += "BAM ";
+
+            if (String.IsNullOrEmpty(strObject) && (strContents.Contains("linea") || strContents.Contains("numeracion"))) strObject += "línea ";
+
+            return strObject.Trim();
         }
 
         public string GetEmotion()
         {
-            Comment comment = new Comment() { Contents = RawContents };
+            TextNormalizer textNormalizer = TextNormalizer.GetInstance();
+            Comment comment = new Comment() { Contents = textNormalizer.CleanString(RawContents) };
             var prediction = _commentPredEngine.Predict(comment);
 
             switch (prediction.Emotion)
@@ -62,21 +107,47 @@ namespace RDemosNET.Models
 
         public string GetDescription()
         {
-            string intention = GetIntention();
-            string emotion = GetEmotion();
+            string intent = Intent;
+            string messageObject = MessageObject;
+            string emotion = Emotion;
 
             Random randomGen = new Random(DateTime.Now.Millisecond);
-            string[] startingPhrases = { "OK. Clarísimo. Veo que es un comentario ", "Este comentario se siente como ", "De todo lo que leo, interpreto que hay un sentimiento ", "Este comentario se siente " };
-            string[] connectingPhrases = { ", particularmente con una sensación de ", ". Aquí interpreto un tono de ", ", sintiendo que genera una emoción de ", ", asociándolo más bien a " };
+            string[] startingPhrases = {
+                "Ojo, que el cliente está presentando un",
+                "Este es claramente un",
+                "OK. En este caso el cliente está pidiendo un",
+                "El cliente necesita un",
+                "La petición del cliente es de un",
+                "Aquí se está pidiendo un" };
+            string[] connectingPhrases = {
+                " de ",
+                " y ojo con la "};
             
-            string description = startingPhrases[randomGen.Next(startingPhrases.Length)];
+            string description = startingPhrases[randomGen.Next(startingPhrases.Length - 1) + 1]; // index = 0 es reclamos
 
-            if (RawContents.Length > 200)
-                description = "Veo varios elementos en este comentario. Primero entiendo el comentario relacionado con ";
-            else if (RawContents.Length > 320)
-                description = "Bien completo el comentario. Entiendo que se se trata de ";
+            if (intent.Contains("reclamo"))
+            {
+                description = startingPhrases[randomGen.Next(2)] + " <b>" + intent + "</b>";
+                if (!String.IsNullOrEmpty(messageObject))
+                    description += " respecto a un" + (messageObject.EndsWith("a") ? "a " : " ") + " <b>" + messageObject + "</b>";
+                description += ". Nótese que se siente " + emotion + " en el mensaje.";
+            }
+            else if (intent.EndsWith("a") || intent.EndsWith("ción") || intent.EndsWith("tud"))
+            {
+                description += "a <b>" + intent + "</b> de un" + (messageObject.EndsWith("a") ? "a " : " ") + "<b>" + messageObject + "</b>";
+                if (randomGen.Next(2) == 1 && (emotion != "enojo" && !RawContents.ToLower().Contains("gracia") && !RawContents.ToLower().Contains("cordiale")))
+                    description += " y lo pide con " + emotion + ".";
+            }
+            else if (!String.IsNullOrEmpty(messageObject))
+            {
+                description += " <b>" + intent + "</b> de un" + (messageObject.EndsWith("a") ? "a " : " ") + "<b>" + messageObject + "</b>";
+            }
+            else 
+            {
+                description += " <b>" + intent + "</b> de algo indeterminado";
+            }
 
-            return description + intention + " de un cliente con " + emotion;
+            return description;
         }
 
     }
