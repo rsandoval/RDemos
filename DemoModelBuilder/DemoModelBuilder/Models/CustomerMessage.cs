@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.ML.Data;
 
-namespace DemoModelBuilder
+namespace DemoModelBuilder.Models
 {
     public class CustomerMessage
     {

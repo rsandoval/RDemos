@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DemoModelBuilder
+namespace DemoModelBuilder.Models
 {
     public class TextNormalizer
     {

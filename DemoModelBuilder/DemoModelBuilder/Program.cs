@@ -1,4 +1,5 @@
 ﻿using System;
+using DemoModelBuilder.Models;
 
 namespace DemoModelBuilder
 {
@@ -6,7 +7,7 @@ namespace DemoModelBuilder
     {
         static void Main(string[] args)
         {
-            ModelBuilder builder = new ModelBuilder();
+            BankMessageSubtypeModelBuilder builder = new BankMessageSubtypeModelBuilder();
 
             builder.Build();
         }

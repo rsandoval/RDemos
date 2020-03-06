@@ -26,13 +26,14 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML;
 
-namespace DemoModelBuilder
+namespace DemoModelBuilder.Models
 {
     public class ModelBuilder
     {
+        // private static string _appPath => Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
         public static string _basePath = @"C:\Users\rodri\Documents\GitHub\RDemos\DemoModelBuilder\DemoModelBuilder";
         const string dataFolder = "data";
-        // private static string _appPath => Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+        
         private static string _sampleDataPath => Path.Combine(_basePath, dataFolder, "SampleComments.tsv");
         private static string _modelPath => Path.Combine(_basePath, dataFolder, "CustomerCommentModel.zip");
 
