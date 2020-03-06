@@ -1,0 +1,17 @@
+﻿1;Consulta sobre productos y Servicios / Cuenta Corriente y Servicios
+2;Consulta sobre Productos y Servicios / Tarjeta de crédito MasterCard
+3; Consulta sobre Productos y Servicios / Créditos
+4;Consulta sobre Productos y Servicios / Seguros
+5;Consulta sobre Productos y Servicios / Productos de inversión
+6;Consulta sobre Productos y Servicios / otros productos y servicios
+7;Reclamo (problema con un producto) / Cuenta Corriente y Servicios
+8;Reclamo (problema con un producto) / Tarjeta de crédito MasterCard
+9;Reclamo correspondencia
+10;Reclamo (problema con un producto) / Otros
+11;Queja de Servicio (del personal) / Ejecutivo de Cuentas
+12;Queja de Servicio (del personal) / Asistente Comercial
+15;Queja de Servicio (del personal) / Otros.
+16;Felicitaciones
+17;Sugerencias
+18;Mensaje al Ejecutivo
+19;Otro motivo / inespecífico
