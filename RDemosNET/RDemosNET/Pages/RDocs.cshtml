@@ -39,10 +39,7 @@
                 <!-- Content -->
                 <section id="content">
                     <h3>Análisis de Documento</h3>
-                    <p>@Model.ResultMessage</p>
-                    <p>El archivo @Model.Filename es un @Model.TypeDescription</p>
-                    <p>Emitido en @Model.DateDescription por Notario @Model.NotaryDescription</p>
-                    <p>Para @Model.NamesDescription</p>
+                    <p>@Html.Raw(@Model.DocumentDescription)</p>
                 </section>
             </div>
         </div>

@@ -24,7 +24,7 @@ namespace Demo.Models
         public DateTime LoadDate { get; set; }
 
         public string Type { get; set; }
-        public DateTime IssueDate { get; set; }
+        public string IssueDate { get; set; }
         public string NamedParts { get; set; }
 
         public string NotaryName { get; set; }

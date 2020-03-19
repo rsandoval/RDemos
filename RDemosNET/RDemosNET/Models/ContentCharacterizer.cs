@@ -27,6 +27,7 @@ namespace Demo.Models
             _predEngine = _mlContext.Model.CreatePredictionEngine<SimpleDocument, TypePrediction>(loadedModel);
 
             _documentTypes = LoadTypes();
+            InitializeMonthWords();
         }
 
         public static ContentCharacterizer GetInstance()
@@ -62,21 +63,25 @@ namespace Demo.Models
             return prediction.Type;
         }
 
-        public DateTime GetIssuingDate(string contents)
+        public string GetIssuingDate(string contents)
         {
             char[] separators = { ' ', '\t', '\n', '\r' };
             string[] words = contents.Split(separators);
 
+            DateRecognizer recognizer = DateRecognizer.GetInstance();
+            List<string> foundDates = recognizer.FindItems(contents);
 
+            int firstValidDateIndex = 0;
+            string foundDate = DateTime.Today.ToString("dd MMM yyyyy");
+            while (firstValidDateIndex < foundDates.Count && !ContainsDate(foundDates[firstValidDateIndex]))
+                firstValidDateIndex++;
 
-            return new DateTime(2019, 1, 1);
+            if (foundDates.Count >= 0 && firstValidDateIndex < foundDates.Count)
+                foundDate = foundDates[firstValidDateIndex].Replace(",", "").Trim();
+
+            return foundDate;
         }
 
-        private bool IsNumeric(string token)
-        {
-            //string[] numbers = { "1", "2", 
-            return false;
-        }
 
         public List<string> GetNames(string contents)
         {
@@ -91,7 +96,11 @@ namespace Demo.Models
         public string GetNotary(string contents)
         {
             NotaryRecognizer recognizer = NotaryRecognizer.GetInstance();
-            List<string> foundNames = recognizer.FindItems(contents);
+
+            int notaryIndex = contents.ToLower().IndexOf("NOTAR");
+            bool considerBeginning = notaryIndex >= 0 && notaryIndex < 100;
+            List<string> foundNames = recognizer.FindItems(contents, considerBeginning);
+            foundNames = recognizer.CleanNotaryNames(foundNames);
 
             return (foundNames.Count > 0 ? foundNames[0] : "");
         }
@@ -102,7 +111,7 @@ namespace Demo.Models
             string concatNames = "";
 
             foreach (string name in names)
-                concatNames += name + ", ";
+                concatNames += name.Replace(",", "") + ", ";
 
             int lastCommaIndex = concatNames.LastIndexOf(",");
 
@@ -123,7 +132,7 @@ namespace Demo.Models
             string docCharacterization = "";
             string typeId = GetDocumentType(contents);
             string typeDesc = GetTypeDescription(typeId);
-            string docDate = GetIssuingDate(contents).ToString("dd MMM yyyy");
+            string docDate = GetIssuingDate(contents);
             string docNames = GetConcatenatedNames(GetNames(contents));
 
             docCharacterization = "El documento \"" + filename + "\" es de tipo " + typeDesc
@@ -131,6 +140,26 @@ namespace Demo.Models
 
             return docCharacterization;
         }
+
+        private bool ContainsDate(string token)
+        {
+            foreach (string month in _months.Keys)
+                if (token.Contains(month)) return true;
+
+            return ContainsDigits(token);
+        }
+        private bool ContainsDigits(string token)
+        {
+            string[] digits = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+
+            foreach (string digit in digits)
+                if (token.Contains(digit))
+                    return true;
+
+            return false;
+        }
+
+
 
         private void InitializeMonthWords()
         {

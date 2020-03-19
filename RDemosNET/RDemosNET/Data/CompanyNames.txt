@@ -1,0 +1,27 @@
+﻿PREFIXES:
+comparecen por una parte
+representando a
+representacion de
+, entre
+entre la sociedad
+empresa
+STARTSWITH:
+sociedad
+productora
+inversion
+inmobiliaria
+constructora
+camara
+ENDSWITH:
+s.a.
+a.g.
+ltda.
+limitada
+spa
+sociedad por acciones
+sociedad anonima
+SUFFIXES:
+representada por
+,
+.
+;

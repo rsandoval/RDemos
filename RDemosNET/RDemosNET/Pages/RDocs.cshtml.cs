@@ -24,7 +24,7 @@ namespace RDemosNET
             return Page();
         }
 
-        public RDocsModel() 
+        public RDocsModel()
         {
         }
 
@@ -32,22 +32,41 @@ namespace RDemosNET
         public IFormFile FileForUpload { get; set; }
         public string ResultMessage { get { return _resultMessage; } set { _resultMessage = value; } }
         public string Filename { get; set; }
+
+        public string DocumentDescription { get; set; }
         public string TypeDescription { get; set; }
         public string DateDescription { get; set; }
         public string NamesDescription { get; set; }
         public string NotaryDescription { get; set; }
 
-        //public async Task OnPostAsync()
         public async Task OnPostAsync()
+        {
+            DocumentDescription = await GetDescription();
+        }
+
+        public async Task<string> GetDescription()
         {
             Document document = new Document(FileForUpload, DateTime.Today);
 
-            ResultMessage = "Documento con las siguientes características encontradas";
+            ResultMessage = "Documento procesado: " + document.Filename;
             Filename = FileForUpload.FileName;
             TypeDescription = document.TypeDescription;
-            DateDescription = document.IssueDate.ToString("dd MMM yyyy");
+            DateDescription = document.IssueDate;
             NamesDescription = document.NamedParts;
             NotaryDescription = document.NotaryName;
+            if (String.IsNullOrEmpty(NotaryDescription)) NotaryDescription = "(no se menciona)";
+
+            string description = "<ul>";
+
+            description += "<li>Archivo: <b>" + Filename + "</b></li>";
+            description += "<li>Tipo: <b>" + TypeDescription + "</b></li>";
+            description += "<li>Fecha emisión: <b>" + DateDescription + "</b></li>";
+            description += "<li>Notario: <b>" + NotaryDescription + "</b></li>";
+            description += "<li>Partes nombradas: <b>" + NamesDescription + "</b></li>";
+
+            description += "</ul>";
+
+            return description;
         }
     }
 }

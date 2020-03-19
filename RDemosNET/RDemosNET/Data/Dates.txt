@@ -1,0 +1,10 @@
+﻿PREFIXES:
+en _
+en Santiago
+fecha
+, a
+en Santiago de Chile a
+SUFFIXES:
+,
+.
+;
