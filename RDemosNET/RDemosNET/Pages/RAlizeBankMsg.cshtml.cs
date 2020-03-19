@@ -35,6 +35,15 @@ namespace RDemosNET
             MessageContents = txtContents;
             MessageDescription = characterizer.GetDescription();
         }
+        public void OnPostProcessComment(string txtContents)
+        {
+            string strComment = txtContents;
+            MessageContents = strComment;
+            BankMessageCharacterizer characterizer = new BankMessageCharacterizer(strComment);
+            MessageDescription = characterizer.GetDescription();
+            MessageShortDescription = characterizer.GetSimpleDescription();
+        }
+
         public void OnPostRandomSample()
         {
             Random randomNum = new Random(DateTime.Now.Millisecond);
