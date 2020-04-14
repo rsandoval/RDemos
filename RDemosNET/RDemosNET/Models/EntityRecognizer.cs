@@ -61,7 +61,7 @@ namespace Demo.Models
         private string CleanString(string contents)
         {
             string result = contents.ToLower().Trim().Replace("á", "a").Replace("é", "e").Replace("í", "i").Replace("ó", "o").Replace("ú", "u").Replace("ñ", "n");
-            result = result.Replace("*", " ").Replace("/", " ").Replace("-", " ");
+            result = result.Replace("*", " ").Replace("/", " ");
             return result;
         }
 
@@ -70,6 +70,21 @@ namespace Demo.Models
             string result = contents.Replace(",", ", ");
             result = result.Replace("  ", " ");
             return result;
+        }
+
+        private List<int> IndicesOf(string contents, string search)
+        {
+            List<int> indicesFound = new List<int>();
+
+            int lastFoundIndex = -1;
+            do
+            {
+                lastFoundIndex = contents.IndexOf(search, lastFoundIndex + 1);
+                if (lastFoundIndex >= 0)
+                    indicesFound.Add(lastFoundIndex);
+            } while (lastFoundIndex >= 0);
+
+            return indicesFound;
         }
 
 
@@ -119,39 +134,53 @@ namespace Demo.Models
 
         public List<string> FindItemsWith(string rawContents)
         {
-            string contents = " " + CleanString(rawContents) + " ";
-            int nextItemIndex = -1;
-            int lastItemIndex = -1;
+            string contents = CleanString(rawContents) + " ";
 
             _foundItems.Clear();
 
-            do
+            // Design note: since this method was first implemented for finding company names
+            // it made sense to start with the ending tokens, such as ("s.a.", "ltda.") and then
+            // move backwards to find the beginning, since these names are somewhate harder to find.
+            foreach (string endToken in _endsWith)
             {
-                foreach (string token in _endsWith)
+                List<int> indicesFound = IndicesOf(contents, endToken + " ");
+                foreach (int index in indicesFound)
                 {
-                    nextItemIndex = contents.IndexOf(" " + token + " ", lastItemIndex + 1);
-                    if (nextItemIndex < 0) continue;
+                    int endIndex = index + endToken.Length;
+                    int startIndex = endIndex - 150; // Items to find shouldn't be longer than 150 characters (or could they?)
+                    if (startIndex < 0) startIndex = 0;
 
-                    // Found one, now search backwards, to the start. 
-                    int startIndex = nextItemIndex - (token.Length + 1);
-                    int endIndex = contents.Length - 1;
-                    foreach (string suffix in _suffixes)
+                    bool foundOne = false;
+                    foreach (string startToken in _startsWith)
                     {
-                        int auxEndIndex = contents.IndexOf(suffix + " ", startIndex + 1);
-                        if (auxEndIndex < 0) continue;
+                        int auxStartIndex = contents.IndexOf(startToken, startIndex + 1);
+                        if (auxStartIndex < 0 || auxStartIndex > index) continue;
 
-                        if (auxEndIndex < endIndex)
-                            endIndex = auxEndIndex;
+                        foundOne = true;
+                        string itemText = contents.Substring(auxStartIndex, endIndex - auxStartIndex).Trim();
+                        if (!_foundItems.Contains(itemText.ToUpper()))
+                            _foundItems.Add(itemText.ToUpper());
+                        break;
                     }
-                    if (endIndex - startIndex > 50) endIndex = startIndex + 50;
-                    lastItemIndex = endIndex;
 
-                    string itemText = rawContents.Substring(startIndex, endIndex - startIndex).Trim();
-                    if (startIndex >= 0 && endIndex > startIndex && !_foundItems.Contains(itemText))
-                        _foundItems.Add(itemText);
-                    break;
-                }
-            } while (nextItemIndex >= 0);
+                    if (foundOne) continue;
+
+                    // Didn't find any _startsWith, now let's use prefixes to find the beginning
+                    foreach (string prefix in _prefixes)
+                    {
+                        int auxStartIndex = contents.IndexOf(" " + prefix, startIndex + 1);
+                        if (auxStartIndex < 0 || auxStartIndex > index) continue;
+
+                        startIndex = auxStartIndex + prefix.Length + 1;
+
+                        foundOne = true;
+                        string itemText = contents.Substring(startIndex, endIndex - startIndex).Trim();
+                        if (!_foundItems.Contains(itemText.ToUpper()))
+                            _foundItems.Add(itemText.ToUpper());
+                        break;
+                    }
+                } // foreach (int index in indicesFound)
+            } // foreach (string endToken in _endsWith)
 
             return _foundItems;
         }
@@ -230,5 +259,23 @@ namespace Demo.Models
             _prefixesAndSuffixesFilename = "Dates.txt";
             LoadPrefixesAndSuffixes(Path.Combine(_prefixesAndSuffixesFilepath, _prefixesAndSuffixesFilename));
         }
+    }
+
+
+    public class CompanyRecognizer : EntityRecognizer
+    {
+        private static CompanyRecognizer _single = null;
+        public static CompanyRecognizer GetInstance()
+        {
+            if (_single == null) _single = new CompanyRecognizer();
+            return _single;
+        }
+
+        private CompanyRecognizer()
+        {
+            _prefixesAndSuffixesFilename = "CompanyNames.txt";
+            LoadPrefixesAndSuffixes(Path.Combine(_prefixesAndSuffixesFilepath, _prefixesAndSuffixesFilename));
+        }
+
     }
 }

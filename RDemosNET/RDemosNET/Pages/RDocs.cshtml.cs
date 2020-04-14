@@ -37,6 +37,7 @@ namespace RDemosNET
         public string TypeDescription { get; set; }
         public string DateDescription { get; set; }
         public string NamesDescription { get; set; }
+        public string CompaniesDescription { get; set; }
         public string NotaryDescription { get; set; }
 
         public async Task OnPostAsync()
@@ -53,6 +54,7 @@ namespace RDemosNET
             TypeDescription = document.TypeDescription;
             DateDescription = document.IssueDate;
             NamesDescription = document.NamedParts;
+            CompaniesDescription = document.NamedCompanies;
             NotaryDescription = document.NotaryName;
             if (String.IsNullOrEmpty(NotaryDescription)) NotaryDescription = "(no se menciona)";
 
@@ -62,7 +64,8 @@ namespace RDemosNET
             description += "<li>Tipo: <b>" + TypeDescription + "</b></li>";
             description += "<li>Fecha emisión: <b>" + DateDescription + "</b></li>";
             description += "<li>Notario: <b>" + NotaryDescription + "</b></li>";
-            description += "<li>Partes nombradas: <b>" + NamesDescription + "</b></li>";
+            description += "<li>Personas nombradas: <b>" + NamesDescription + "</b></li>";
+            description += "<li>Personas jurídicas: <b>" + CompaniesDescription + "</b></li>";
 
             description += "</ul>";
 

@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
+//using PdfSharp.Pdf;
+//using PdfSharp.Pdf.IO;
+
+using iText.Kernel.Pdf;
 
 using DocumentFormat.OpenXml.Packaging;
 
@@ -26,7 +28,7 @@ namespace Demo.Models
         public string Type { get; set; }
         public string IssueDate { get; set; }
         public string NamedParts { get; set; }
-
+        public string NamedCompanies { get; set; }
         public string NotaryName { get; set; }
 
         public string TypeDescription { get { return ContentCharacterizer.GetInstance().GetTypeDescription(Type); } }
@@ -44,7 +46,7 @@ namespace Demo.Models
             {
                 Contents = ReadPdfDocument(FileForUpload);
             }
-            else if (FileForUpload.ContentType.Contains("wordprocess"))
+            else if (FileForUpload.ContentType.Contains("word"))
             {
                 Contents = ReadWordDocument(FileForUpload);
             }
@@ -59,7 +61,14 @@ namespace Demo.Models
 
             IssueDate = characterizer.GetIssuingDate(Contents);
 
-            NamedParts = characterizer.GetConcatenatedNames(characterizer.GetNames(Contents));
+            List<string> companyNames = characterizer.GetCompanyNames(Contents);
+            NamedCompanies = characterizer.GetConcatenatedNames(companyNames);
+
+            List<string> namedParts = characterizer.GetNames(Contents);
+            foreach (string companyName in companyNames)
+                namedParts.Remove(companyName);
+
+            NamedParts = characterizer.GetConcatenatedNames(namedParts);
 
             NotaryName = characterizer.GetNotary(Contents);
         }
@@ -75,19 +84,61 @@ namespace Demo.Models
             return contents;
         }
 
+        private string ReadPdfDocumentOld(IFormFile fileForUpload)
+        {
+            string contents = "";
+
+            PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
+            PdfDocument docToRead = new PdfDocument(docReader);
+            docToRead.GetFirstPage
+
+            for (int pageNum = 0; pageNum < docToRead.GetNumberOfPages(); pageNum++)
+            {
+                PdfPage pdfPage = docToRead.GetPage(pageNum);
+                PdfStream pageStream = pdfPage.GetContentStream(0);
+                ICollection<PdfName> keys = pageStream.KeySet();
+                contents += pageStream.ToString() + " ";
+            }
+
+            return contents.Trim();
+        }
+
         private string ReadPdfDocument(IFormFile fileForUpload)
         {
             string contents = "";
 
-            PdfDocument docToRead = PdfReader.Open(fileForUpload.OpenReadStream());
+            PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
+            PdfDocument docToRead = new PdfDocument(docReader);
+            PDfText
 
-            for (int pageNum = 0; pageNum < docToRead.PageCount; pageNum++)
-            {
-                PdfPage pdfPage = docToRead.Pages[pageNum];
-                contents += pdfPage.Contents.ToString() + " ";
-            }
+            Pdf
+
+            Rectangle rect = new Rectangle(36, 750, 523, 56);
+            CustomFontFilter fontFilter = new CustomFontFilter(rect);
+            FilteredEventListener listener = new FilteredEventListener();
+
+            // Create a text extraction renderer
+            LocationTextExtractionStrategy extractionStrategy = listener
+                    .attachEventListener(new LocationTextExtractionStrategy(), fontFilter);
+
+            // Note: If you want to re-use the PdfCanvasProcessor, you must call PdfCanvasProcessor.reset()
+            PdfCanvasProcessor parser = new PdfCanvasProcessor(listener);
+            parser.processPageContent(pdfDoc.getFirstPage());
+
+            // Get the resultant text after applying the custom filter
+            contents = extractionStrategy.getResultantText();
+
+            docToRead.Close();
 
             return contents.Trim();
+        }
+        public string ExtractText(this PdfPage page, Rectangle rect)
+        {
+            var filter = new IEventFilter[1];
+            filter[0] = new TextRegionEventFilter(rect);
+            var filteredTextEventListener = new FilteredTextEventListener(new LocationTextExtractionStrategy(), filter);
+            var str = PdfTextExtractor.GetTextFromPage(page, filteredTextEventListener);
+            return str;
         }
 
         private string ReadWordDocument(IFormFile fileForUpload)

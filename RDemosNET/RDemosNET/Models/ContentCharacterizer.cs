@@ -93,6 +93,15 @@ namespace Demo.Models
 
             return foundNames;
         }
+
+        public List<string> GetCompanyNames(string contents)
+        {
+            CompanyRecognizer recognizer = CompanyRecognizer.GetInstance();
+            List<string> foundNames = recognizer.FindItems(contents);
+
+            return foundNames;
+        }
+
         public string GetNotary(string contents)
         {
             NotaryRecognizer recognizer = NotaryRecognizer.GetInstance();
@@ -109,6 +118,8 @@ namespace Demo.Models
         public string GetConcatenatedNames(List<string> names)
         {
             string concatNames = "";
+
+            if (names.Count == 0) return concatNames;
 
             foreach (string name in names)
                 concatNames += name.Replace(",", "") + ", ";

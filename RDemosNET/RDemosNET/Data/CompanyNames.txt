@@ -1,12 +1,18 @@
 ﻿PREFIXES:
+entre la sociedad
+entre
+sociedad por acciones
+sociedad de
+sociedad
 comparecen por una parte
 representando a
 representacion de
-, entre
-entre la sociedad
 empresa
+denominada
+referida a
+hoy
+-A-
 STARTSWITH:
-sociedad
 productora
 inversion
 inmobiliaria
