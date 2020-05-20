@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-//using PdfSharp.Pdf;
-//using PdfSharp.Pdf.IO;
-
 using iText.Kernel.Pdf;
-
+using iText.Kernel.Pdf.Canvas.Parser;
 using DocumentFormat.OpenXml.Packaging;
+using Tesseract.Interop;
+using Tesseract;
+using System.Drawing;
 
 using Microsoft.ML.Data;
+
 
 namespace Demo.Models
 {
@@ -50,6 +51,10 @@ namespace Demo.Models
             {
                 Contents = ReadWordDocument(FileForUpload);
             }
+            else if (FileForUpload.ContentType.Contains("jpeg"))
+            {
+                Contents = ReadImageDocument(FileForUpload);
+            }
             else
             {
                 Contents = ReadTextDocument(FileForUpload);
@@ -73,6 +78,34 @@ namespace Demo.Models
             NotaryName = characterizer.GetNotary(Contents);
         }
 
+        protected HtmlGenericControl meanConfidenceLabel;
+
+        private string ReadImageDocument(IFormFile fileForUpload)
+        {
+            string contents = "";
+
+            using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+            {
+                var reader = new StreamReader(fileForUpload.OpenReadStream());
+                // have to load Pix via a bitmap since Pix doesn't support loading a stream.
+                using (var image = Pix.LoadTiffFromMemory(reader.))
+                {
+                    using (var pix = PixConverter.ToPix(image))
+                    {
+                        using (var page = engine.Process(pix))
+                        {
+                            meanConfidenceLabel.InnerText = String.Format("{0:P}", page.GetMeanConfidence());
+                            resultText.InnerText = page.GetText();
+                        }
+                    }
+                }
+            }
+            inputPanel.Visible = false;
+            resultPanel.Visible = true;
+            
+            return contents;
+        }
+
         private string ReadTextDocument(IFormFile fileForUpload)
         {
             string contents = "";
@@ -84,61 +117,31 @@ namespace Demo.Models
             return contents;
         }
 
-        private string ReadPdfDocumentOld(IFormFile fileForUpload)
-        {
-            string contents = "";
-
-            PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
-            PdfDocument docToRead = new PdfDocument(docReader);
-            docToRead.GetFirstPage
-
-            for (int pageNum = 0; pageNum < docToRead.GetNumberOfPages(); pageNum++)
-            {
-                PdfPage pdfPage = docToRead.GetPage(pageNum);
-                PdfStream pageStream = pdfPage.GetContentStream(0);
-                ICollection<PdfName> keys = pageStream.KeySet();
-                contents += pageStream.ToString() + " ";
-            }
-
-            return contents.Trim();
-        }
-
         private string ReadPdfDocument(IFormFile fileForUpload)
         {
             string contents = "";
 
             PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
             PdfDocument docToRead = new PdfDocument(docReader);
-            PDfText
+            int numPages = docToRead.GetNumberOfPages();
+            //docToRead.GetFirstPage
 
-            Pdf
+            for (int pageNum = 1; pageNum <= numPages; pageNum++)
+            {
+                /*ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
+                string currentText = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
+                currentText = Encoding.UTF8.GetString(ASCIIEncoding.Convert(
+                    Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));*/
 
-            Rectangle rect = new Rectangle(36, 750, 523, 56);
-            CustomFontFilter fontFilter = new CustomFontFilter(rect);
-            FilteredEventListener listener = new FilteredEventListener();
-
-            // Create a text extraction renderer
-            LocationTextExtractionStrategy extractionStrategy = listener
-                    .attachEventListener(new LocationTextExtractionStrategy(), fontFilter);
-
-            // Note: If you want to re-use the PdfCanvasProcessor, you must call PdfCanvasProcessor.reset()
-            PdfCanvasProcessor parser = new PdfCanvasProcessor(listener);
-            parser.processPageContent(pdfDoc.getFirstPage());
-
-            // Get the resultant text after applying the custom filter
-            contents = extractionStrategy.getResultantText();
-
-            docToRead.Close();
+                PdfPage pdfPage = docToRead.GetPage(pageNum);
+                PdfStream pageStream = pdfPage.GetContentStream(0);
+                ICollection<PdfName> keys = pageStream.KeySet();
+                string content = PdfTextExtractor.GetTextFromPage(pdfPage);
+                contents += content.Replace("\n", " ").Replace("\r","") + " ";
+                
+            }
 
             return contents.Trim();
-        }
-        public string ExtractText(this PdfPage page, Rectangle rect)
-        {
-            var filter = new IEventFilter[1];
-            filter[0] = new TextRegionEventFilter(rect);
-            var filteredTextEventListener = new FilteredTextEventListener(new LocationTextExtractionStrategy(), filter);
-            var str = PdfTextExtractor.GetTextFromPage(page, filteredTextEventListener);
-            return str;
         }
 
         private string ReadWordDocument(IFormFile fileForUpload)

@@ -99,7 +99,11 @@ namespace Demo.Models
             CompanyRecognizer recognizer = CompanyRecognizer.GetInstance();
             List<string> foundNames = recognizer.FindItems(contents);
 
-            return foundNames;
+            List<string> cleanFoundNames = new List<string>();
+            foreach (string item in foundNames)
+                cleanFoundNames.Add(item.Replace("POR UNA PARTE", "").Replace("Y EL", "").Replace("EL USO DE CUALQUIERA DE ESTAS EXPRESIONES EN EL TEXTO DE PRESENTE CONTRATO SE ENTENDERA REFERIDA A", ""));
+
+            return cleanFoundNames;
         }
 
         public string GetNotary(string contents)

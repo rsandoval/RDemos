@@ -143,7 +143,7 @@ namespace Demo.Models
             // move backwards to find the beginning, since these names are somewhate harder to find.
             foreach (string endToken in _endsWith)
             {
-                List<int> indicesFound = IndicesOf(contents, endToken + " ");
+                List<int> indicesFound = IndicesOf(contents, endToken);
                 foreach (int index in indicesFound)
                 {
                     int endIndex = index + endToken.Length;
