@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
-
 using DocumentFormat.OpenXml.Packaging;
+
 namespace RDemosNET.Models
 {
     public class ResumeCharacterizer
@@ -70,13 +68,13 @@ namespace RDemosNET.Models
         {
             string contents = "";
 
-            PdfDocument docToRead = PdfReader.Open(fileForUpload.OpenReadStream());
+            //PdfDocument docToRead = PdfReader.Open(fileForUpload.OpenReadStream());
 
-            for (int pageNum = 0; pageNum < docToRead.PageCount; pageNum++)
-            {
-                PdfPage pdfPage = docToRead.Pages[pageNum];
-                contents += pdfPage.Contents.ToString() + " ";
-            }
+            //for (int pageNum = 0; pageNum < docToRead.PageCount; pageNum++)
+            //{
+            //    PdfPage pdfPage = docToRead.Pages[pageNum];
+            //    contents += pdfPage.Contents.ToString() + " ";
+            //}
 
             return contents.Trim();
         }

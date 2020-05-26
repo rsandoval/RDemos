@@ -12,6 +12,9 @@ using Tesseract.Interop;
 using Tesseract;
 using System.Drawing;
 
+
+using Microsoft.Office.Interop.Word;
+
 using Microsoft.ML.Data;
 
 
@@ -47,7 +50,7 @@ namespace Demo.Models
             {
                 Contents = ReadPdfDocument(FileForUpload);
             }
-            else if (FileForUpload.ContentType.Contains("word"))
+            else if (FileForUpload.ContentType.Contains("openxml"))
             {
                 Contents = ReadWordDocument(FileForUpload);
             }
@@ -78,7 +81,7 @@ namespace Demo.Models
             NotaryName = characterizer.GetNotary(Contents);
         }
 
-        protected HtmlGenericControl meanConfidenceLabel;
+        // protected HtmlGenericControl meanConfidenceLabel;
 
         private string ReadImageDocument(IFormFile fileForUpload)
         {
@@ -88,20 +91,18 @@ namespace Demo.Models
             {
                 var reader = new StreamReader(fileForUpload.OpenReadStream());
                 // have to load Pix via a bitmap since Pix doesn't support loading a stream.
-                using (var image = Pix.LoadTiffFromMemory(reader.))
-                {
-                    using (var pix = PixConverter.ToPix(image))
-                    {
-                        using (var page = engine.Process(pix))
-                        {
-                            meanConfidenceLabel.InnerText = String.Format("{0:P}", page.GetMeanConfidence());
-                            resultText.InnerText = page.GetText();
-                        }
-                    }
-                }
+                //using (var image = Pix.LoadTiffFromMemory(reader.))
+                //{
+                //    //using (var pix = PixConverter.ToPix(image))
+                //    //{
+                //    //    using (var page = engine.Process(pix))
+                //    //    {
+                //    //        meanConfidenceLabel.InnerText = String.Format("{0:P}", page.GetMeanConfidence());
+                //    //        resultText.InnerText = page.GetText();
+                //    //    }
+                //    //}
+                //}
             }
-            inputPanel.Visible = false;
-            resultPanel.Visible = true;
             
             return contents;
         }
@@ -124,15 +125,9 @@ namespace Demo.Models
             PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
             PdfDocument docToRead = new PdfDocument(docReader);
             int numPages = docToRead.GetNumberOfPages();
-            //docToRead.GetFirstPage
 
             for (int pageNum = 1; pageNum <= numPages; pageNum++)
             {
-                /*ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
-                string currentText = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
-                currentText = Encoding.UTF8.GetString(ASCIIEncoding.Convert(
-                    Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));*/
-
                 PdfPage pdfPage = docToRead.GetPage(pageNum);
                 PdfStream pageStream = pdfPage.GetContentStream(0);
                 ICollection<PdfName> keys = pageStream.KeySet();
@@ -152,6 +147,22 @@ namespace Demo.Models
             DocumentFormat.OpenXml.Wordprocessing.Body body = wordprocessingDocument.MainDocumentPart.Document.Body;
 
             contents = body.InnerText;
+
+            //ApplicationClass appClass = new ApplicationClass();
+            //Microsoft.Office.Interop.Word.Document doc = new Microsoft.Office.Interop.Word.Document();
+
+            //object readOnly = false;
+            //object isVisible = true;
+            //object missing = System.Reflection.Missing.Value;
+            //try
+            //{
+            //    doc = AC.Documents.Open(ref filename, ref missing, ref readOnly, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref isVisible, ref isVisible, ref missing, ref missing, ref missing);
+            //    contents = doc.Content.Text;
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
 
             return contents.Trim();
         }
