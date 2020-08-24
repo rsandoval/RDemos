@@ -110,6 +110,26 @@ namespace RDemosNET.Models
             return newString;
         }
 
+        public string FirstLetterUpper(string rawName)
+        {
+            if (string.IsNullOrEmpty(rawName)) return "";
+
+            string fixedName = rawName.ToLower();
+
+            int index = -1;
+            while (index < fixedName.Length)
+            {
+                string prevString = "";
+                if (index > 0 && index < fixedName.Length) prevString = fixedName.Substring(0, index) + " ";
+                fixedName = prevString + fixedName.Substring(index + 1, 1).ToUpper() + fixedName.Substring(index + 2);
+                index = fixedName.IndexOf(" ", index + 1);
+                if (index < 1) break;
+            }
+
+            return fixedName;
+        }
+
+
         private List<string> LoadDataFile(string filename)
         {
             List<string> dataLines = new List<string>();
@@ -123,7 +143,7 @@ namespace RDemosNET.Models
                     dataLine = reader.ReadLine();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 

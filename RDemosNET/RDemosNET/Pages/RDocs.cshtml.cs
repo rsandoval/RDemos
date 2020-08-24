@@ -39,10 +39,15 @@ namespace RDemosNET
         public string NamesDescription { get; set; }
         public string CompaniesDescription { get; set; }
         public string NotaryDescription { get; set; }
+        public string IDsDescription { get; set; }
+        public string DocumentContents { get; set; }
 
         public async Task OnPostAsync()
         {
-            DocumentDescription = await GetDescription();
+            if (String.IsNullOrEmpty(FileForUpload.FileName))
+                DocumentDescription = "Debe seleccionar un documento para procesar. Los formatos son: PDF, DOC, DOCX, TXT, y TIF";
+            else 
+                DocumentDescription = await GetDescription();
         }
 
         public async Task<string> GetDescription()
@@ -51,25 +56,41 @@ namespace RDemosNET
 
             ResultMessage = "Documento procesado: " + document.Filename;
             Filename = FileForUpload.FileName;
-            TypeDescription = document.TypeDescription;
-            DateDescription = document.IssueDate;
-            NamesDescription = document.NamedParts;
-            CompaniesDescription = document.NamedCompanies;
-            NotaryDescription = document.NotaryName;
-            if (String.IsNullOrEmpty(NotaryDescription)) NotaryDescription = "(no se menciona)";
 
-            string description = "<ul>";
+            if (!document.SuccessfullyProcessed)
+            {
+                ResultMessage = "Error al procesar el documento " + FileForUpload.FileName;
 
-            description += "<li>Archivo: <b>" + Filename + "</b></li>";
-            description += "<li>Tipo: <b>" + TypeDescription + "</b></li>";
-            description += "<li>Fecha emisión: <b>" + DateDescription + "</b></li>";
-            description += "<li>Notario: <b>" + NotaryDescription + "</b></li>";
-            description += "<li>Personas nombradas: <b>" + NamesDescription + "</b></li>";
-            description += "<li>Personas jurídicas: <b>" + CompaniesDescription + "</b></li>";
+                return ResultMessage;
+            }
+            else
+            {
+                TypeDescription = document.TypeDescription;
+                DateDescription = document.IssueDate;
+                NamesDescription = document.NamedParts;
+                CompaniesDescription = document.NamedCompanies;
+                NotaryDescription = document.NotaryName;
+                IDsDescription = document.PersonIDs;
 
-            description += "</ul>";
+                DocumentContents = document.Contents;
 
-            return description;
+                if (String.IsNullOrEmpty(NotaryDescription)) NotaryDescription = "(no se menciona)";
+
+                string description = "<ul>";
+
+                description += "<li>Archivo: <b>" + Filename + "</b></li>";
+                description += "<li>Tipo: <b>" + TypeDescription + "</b></li>";
+                description += "<li>Fecha emisión: <b>" + DateDescription + "</b></li>";
+                description += "<li>Notario: <b>" + NotaryDescription + "</b></li>";
+                description += "<li>RUTs: <b>" + IDsDescription + "</b></li>";
+                description += "<li>Personas nombradas: <b>" + NamesDescription + "</b></li>";
+                description += "<li>Personas jurídicas: <b>" + CompaniesDescription + "</b></li>";
+
+                description += "</ul>";
+                return description;
+            }
+
+
         }
     }
 }

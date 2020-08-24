@@ -8,11 +8,6 @@ using Microsoft.AspNetCore.Http;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using DocumentFormat.OpenXml.Packaging;
-using Tesseract.Interop;
-using Tesseract;
-using System.Drawing;
-
-
 using Microsoft.Office.Interop.Word;
 
 using Microsoft.ML.Data;
@@ -34,11 +29,14 @@ namespace Demo.Models
         public string NamedParts { get; set; }
         public string NamedCompanies { get; set; }
         public string NotaryName { get; set; }
+        public string PersonIDs { get; set; }
+        public bool SuccessfullyProcessed { get; set; }
 
         public string TypeDescription { get { return ContentCharacterizer.GetInstance().GetTypeDescription(Type); } }
 
         public Document()
         {
+            SuccessfullyProcessed = false;
         }
 
         public Document(IFormFile FileForUpload, DateTime uploadDate)
@@ -54,7 +52,7 @@ namespace Demo.Models
             {
                 Contents = ReadWordDocument(FileForUpload);
             }
-            else if (FileForUpload.ContentType.Contains("jpeg"))
+            else if (FileForUpload.ContentType.Contains("image"))
             {
                 Contents = ReadImageDocument(FileForUpload);
             }
@@ -79,6 +77,11 @@ namespace Demo.Models
             NamedParts = characterizer.GetConcatenatedNames(namedParts);
 
             NotaryName = characterizer.GetNotary(Contents);
+
+            PersonIDs = characterizer.GetConcatenatedIDs(Contents);
+            if (String.IsNullOrEmpty(PersonIDs)) PersonIDs = "(No se detectaron)";
+
+            SuccessfullyProcessed = (Contents.StartsWith("Failed to ") ? false: true);
         }
 
         // protected HtmlGenericControl meanConfidenceLabel;
@@ -87,22 +90,9 @@ namespace Demo.Models
         {
             string contents = "";
 
-            using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
-            {
-                var reader = new StreamReader(fileForUpload.OpenReadStream());
-                // have to load Pix via a bitmap since Pix doesn't support loading a stream.
-                //using (var image = Pix.LoadTiffFromMemory(reader.))
-                //{
-                //    //using (var pix = PixConverter.ToPix(image))
-                //    //{
-                //    //    using (var page = engine.Process(pix))
-                //    //    {
-                //    //        meanConfidenceLabel.InnerText = String.Format("{0:P}", page.GetMeanConfidence());
-                //    //        resultText.InnerText = page.GetText();
-                //    //    }
-                //    //}
-                //}
-            }
+            ImageDocument imageDocument = new ImageDocument(fileForUpload.OpenReadStream());
+
+            contents = imageDocument.GetContents();
             
             return contents;
         }
@@ -147,22 +137,6 @@ namespace Demo.Models
             DocumentFormat.OpenXml.Wordprocessing.Body body = wordprocessingDocument.MainDocumentPart.Document.Body;
 
             contents = body.InnerText;
-
-            //ApplicationClass appClass = new ApplicationClass();
-            //Microsoft.Office.Interop.Word.Document doc = new Microsoft.Office.Interop.Word.Document();
-
-            //object readOnly = false;
-            //object isVisible = true;
-            //object missing = System.Reflection.Missing.Value;
-            //try
-            //{
-            //    doc = AC.Documents.Open(ref filename, ref missing, ref readOnly, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref isVisible, ref isVisible, ref missing, ref missing, ref missing);
-            //    contents = doc.Content.Text;
-            //}
-            //catch (Exception ex)
-            //{
-
-            //}
 
             return contents.Trim();
         }

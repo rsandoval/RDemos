@@ -16,14 +16,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />
-    <PackageReference Include="itext7" Version="7.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
-    <PackageReference Include="Microsoft.ML" Version="1.4.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />
+    <PackageReference Include="itext7" Version="7.1.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.7" />
+    <PackageReference Include="Microsoft.ML" Version="1.5.1" />
     <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1003" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Spell.Check" Version="4.0.3.2" />
+    <PackageReference Include="Stanford.NLP.NER" Version="3.9.2" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="Tesseract" Version="3.3.0" />
     <PackageReference Include="Tesseract.Net.SDK" Version="1.15.342" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\rodri\.nuget\packages\tesseract\3.3.0\build\\..\x64\liblept1753.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="C:\Users\rodri\.nuget\packages\tesseract\3.3.0\build\\..\x64\libtesseract3052.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

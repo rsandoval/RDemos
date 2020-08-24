@@ -1,0 +1,17 @@
+﻿PREFIXES:
+RUT N°
+RUT
+rol único tributario número
+rol único tributario
+identidad número
+cédula número
+identidad N°
+cédula N°
+cédula
+SUFFIXES:
+,
+representada
+ambos 
+todos 
+y
+en representación

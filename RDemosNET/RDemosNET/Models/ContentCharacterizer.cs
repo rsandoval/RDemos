@@ -70,9 +70,10 @@ namespace Demo.Models
 
             DateRecognizer recognizer = DateRecognizer.GetInstance();
             List<string> foundDates = recognizer.FindItems(contents);
+            foundDates = recognizer.RemoveNonValidDates(foundDates);
 
             int firstValidDateIndex = 0;
-            string foundDate = DateTime.Today.ToString("dd MMM yyyyy");
+            string foundDate = "Fecha no detectada"; // DateTime.Today.ToString("dd MMM yyyy");
             while (firstValidDateIndex < foundDates.Count && !ContainsDate(foundDates[firstValidDateIndex]))
                 firstValidDateIndex++;
 
@@ -91,6 +92,8 @@ namespace Demo.Models
 
             foundNames.Remove(notaryName);
 
+            foundNames = recognizer.CleanNames(foundNames);
+
             return foundNames;
         }
 
@@ -99,11 +102,9 @@ namespace Demo.Models
             CompanyRecognizer recognizer = CompanyRecognizer.GetInstance();
             List<string> foundNames = recognizer.FindItems(contents);
 
-            List<string> cleanFoundNames = new List<string>();
-            foreach (string item in foundNames)
-                cleanFoundNames.Add(item.Replace("POR UNA PARTE", "").Replace("Y EL", "").Replace("EL USO DE CUALQUIERA DE ESTAS EXPRESIONES EN EL TEXTO DE PRESENTE CONTRATO SE ENTENDERA REFERIDA A", ""));
+            foundNames = recognizer.CleanNames(foundNames);
 
-            return cleanFoundNames;
+            return foundNames;
         }
 
         public string GetNotary(string contents)
@@ -118,6 +119,30 @@ namespace Demo.Models
             return (foundNames.Count > 0 ? foundNames[0] : "");
         }
 
+        public List<string> GetIDs(string contents)
+        {
+            RUTRecognizer recognizer = RUTRecognizer.GetInstance();
+            List<string> foundItems = recognizer.FindItems(contents);
+
+            foundItems = recognizer.CleanElements(foundItems);
+
+            return foundItems;
+        }
+
+        public string GetConcatenatedIDs(string contents)
+        {
+            List<string> items = GetIDs(contents);
+            string concatItems = "";
+
+            if (items.Count == 0) return concatItems;
+
+            foreach (string item in items)
+                concatItems += item.Replace(",", "") + ", ";
+
+            int lastCommaIndex = concatItems.LastIndexOf(",");
+
+            return concatItems.Substring(0, lastCommaIndex).Trim();
+        }
 
         public string GetConcatenatedNames(List<string> names)
         {

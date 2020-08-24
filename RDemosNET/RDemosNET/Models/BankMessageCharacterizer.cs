@@ -201,7 +201,7 @@ namespace RDemosNET.Models
                     dataLine = reader.ReadLine();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 
