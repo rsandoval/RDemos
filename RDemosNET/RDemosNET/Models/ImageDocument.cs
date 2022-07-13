@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,36 +18,76 @@ namespace Demo.Models
         {
             try
             {
-                using (var engine = new TesseractEngine(@"tessdata", "spa" , EngineMode.Default))
-                {
-                    byte[] buffer = new byte[fileStream.Length];
-                    fileStream.Read(buffer, 0, (int) fileStream.Length);
-                    using (var img = Pix.LoadTiffFromMemory(buffer))
-                    {
-                        using (var page = engine.Process(img))
-                        {
-                            _textContents = page.GetText();
-                        }
-                    }
-                    // have to load Pix via a bitmap since Pix doesn't support loading a stream.
-                    //using (var image = Pix.LoadTiffFromMemory(reader.))
-                    //{
-                    //    //using (var pix = PixConverter.ToPix(image))
-                    //    //{
-                    //    //    using (var page = engine.Process(pix))
-                    //    //    {
-                    //    //        meanConfidenceLabel.InnerText = String.Format("{0:P}", page.GetMeanConfidence());
-                    //    //        resultText.InnerText = page.GetText();
-                    //    //    }
-                    //    //}
-                    //}
-                }
-
+                byte[] buffer = new byte[fileStream.Length];
+                fileStream.Read(buffer, 0, (int)fileStream.Length);
+                ReadBytesBuffer(buffer);
             }
             catch (Exception e)
             {
                 _textContents = e.Message;
                 return;
+            }
+
+        }
+
+        public ImageDocument(byte[] byteBuffer)
+        {
+            ReadBytesBuffer(byteBuffer);
+        }
+
+        public ImageDocument(Image rawImage)
+        {
+            ReadImage(rawImage);
+        }
+        public bool ReadBytesBuffer(byte[] byteBuffer)
+        {
+            try
+            {
+                using (var engine = new TesseractEngine(@"tessdata", "spa", EngineMode.Default))
+                {
+                    using (Pix img = Pix.LoadTiffFromMemory(byteBuffer))
+                    {
+                        using (Page page = engine.Process(img))
+                        {
+                            _textContents = page.GetText();
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                _textContents = e.Message;
+                return false;
+            }
+
+        }
+
+        public bool ReadImage(System.Drawing.Image sourceImage)
+        {
+            try
+            {
+                using (var engine = new TesseractEngine(@"tessdata", "spa", EngineMode.Default))
+                {
+                    MemoryStream ms = new MemoryStream();
+                    sourceImage.Save(ms, System.Drawing.Imaging.ImageFormat.Tiff);
+
+                    using (Pix img = Pix.LoadTiffFromMemory(ms.ToArray()))
+                    {
+                        using (Page page = engine.Process(img))
+                        {
+                            _textContents = page.GetText();
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                _textContents = e.Message;
+                return false;
             }
 
         }
