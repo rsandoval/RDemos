@@ -1,0 +1,49 @@
+﻿@page
+@model RDemosNET.Pages.LogDate.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>DemoLog</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="DemoLog.ApplicationID" class="control-label"></label>
+                <input asp-for="DemoLog.ApplicationID" class="form-control" />
+                <span asp-validation-for="DemoLog.ApplicationID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DemoLog.LogDate" class="control-label"></label>
+                <input asp-for="DemoLog.LogDate" class="form-control" />
+                <span asp-validation-for="DemoLog.LogDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DemoLog.IPAddress" class="control-label"></label>
+                <input asp-for="DemoLog.IPAddress" class="form-control" />
+                <span asp-validation-for="DemoLog.IPAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DemoLog.LogDetails" class="control-label"></label>
+                <input asp-for="DemoLog.LogDetails" class="form-control" />
+                <span asp-validation-for="DemoLog.LogDetails" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

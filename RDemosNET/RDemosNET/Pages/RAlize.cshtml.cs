@@ -39,7 +39,11 @@ namespace RDemosNET
         public void OnPostRandomSample()
         {
             Random randomNum = new Random(DateTime.Now.Millisecond);
-            string[] samples = { "Me parece pésimo que el resultado de la prueba haya sido tan bajo.", "Me parece excelente que el resultado de la prueba haya sido tan alto.", "Un resultado así no era esperable." };
+            string[] samples = {
+                "Me parece pésimo que el resultado de la prueba haya sido tan bajo.",
+                "Me parece excelente que el resultado de la prueba haya sido tan alto.",
+                "Un resultado así no era esperable y resulta increíble que se hay presentado como tal.",
+                "Me inquieta ver lo que puede suceder con el transporte público en los próximos meses." };
             string strComment = samples[randomNum.Next(samples.Length)];
             CommentContents = strComment;
             CommentCharacterizer characterizer = new CommentCharacterizer(strComment);

@@ -1,0 +1,46 @@
+﻿@page
+@model RDemosNET.RAlizeBatchModel
+@{
+    ViewData["Title"] = "R:Alize | Entendimiento de Lenguaje Humano - API de operación manual en lote";
+}
+}
+
+<div id="main" class="wrapper style1">
+    <div class="container">
+
+
+        <!-- Main -->
+        <header class="major">
+            <h2>R:Alize API</h2>
+            <p>Entendimiento &amp; Inteligencia de Lenguaje</p>
+        </header>
+        <div class="row 150%">
+            <div class="4u 12u$(medium)">
+
+                <!-- Sidebar -->
+                <section id="sidebar">
+                    <section>
+                        <h3>Documento único</h3>
+                        <form enctype="multipart/form-data" method="post">
+                            <dl>
+                                <dd>
+                                    <input type="file" asp-for="FileForUpload" />
+                                </dd>
+                            </dl>
+                            <input asp-page-handler="Upload" class="button alternative" type="submit" value="Procesar datos" />
+                        </form>
+                    </section>
+                </section>
+
+            </div>
+            <div class="8u$ 12u$(medium) important(medium)">
+
+                <!-- Content -->
+                <section id="content">
+                    <h3>Análisis de Documento</h3>
+                    <p>@Html.Raw(@Model.ResultMessage)</p>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

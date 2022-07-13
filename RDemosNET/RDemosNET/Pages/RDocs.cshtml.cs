@@ -59,7 +59,8 @@ namespace RDemosNET
 
             if (!document.SuccessfullyProcessed)
             {
-                ResultMessage = "Error al procesar el documento " + FileForUpload.FileName;
+                ResultMessage = "Error al procesar el documento " + FileForUpload.FileName + "<br/>" + 
+                    document.LastErrorMessage;
 
                 return ResultMessage;
             }

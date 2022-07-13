@@ -18,6 +18,9 @@ namespace Demo.Models
         protected static string _prefixesAndSuffixesFilename = "Names.txt";
         protected static string _prefixesAndSuffixesFilepath = "data";
 
+        public List<string> MaleNames = new List<string>();
+        public List<string> FemaleNames = new List<string>();
+
         public List<string> Items { get { return _foundItems; } }
         public int Count {  get { return _foundItems.Count; } }
 
@@ -27,6 +30,58 @@ namespace Demo.Models
         {
             //LoadPrefixesAndSuffixes(Path.Combine(_prefixesAndSuffixesFilepath, _prefixesAndSuffixesFilename));
         }
+
+        protected void LoadNamesLists()
+        {
+            StreamReader reader = new StreamReader(_prefixesAndSuffixesFilepath + "\\hombres.txt");
+
+            string line = "";
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (string.IsNullOrEmpty(line.Trim()) || line.Contains("#") || line.Contains("//")) continue;
+                MaleNames.Add(line.Trim());
+            }
+            reader.Close();
+
+            reader = new StreamReader(_prefixesAndSuffixesFilepath + "\\mujeres.txt");
+
+            line = "";
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (string.IsNullOrEmpty(line.Trim()) || line.Contains("#") || line.Contains("//")) continue;
+                FemaleNames.Add(line.Trim());
+            }
+            reader.Close();
+        }
+
+        public bool IsMaleName(string content)
+        {
+            string name = ReplaceTildes(content.Trim().ToUpper());
+            if (MaleNames.Count == 0) LoadNamesLists();
+            return MaleNames.Contains(name);
+        }
+        public bool IsFemaleName(string content)
+        {
+            string name = ReplaceTildes(content.Trim().ToUpper());
+            if (FemaleNames.Count == 0) LoadNamesLists();
+            return FemaleNames.Contains(name);
+        }
+        public bool IsName(string content)
+        {
+            if (IsMaleName(content)) return true;
+            return IsFemaleName(content);
+        }
+
+        public string ReplaceTildes(string text)
+        {
+            string resultText = text.Replace("Á", "A");
+            resultText = resultText.Replace("É", "E");
+            resultText = resultText.Replace("Í", "I");
+            resultText = resultText.Replace("Ó", "O");
+            resultText = resultText.Replace("Ú", "U");
+            return resultText;
+        }
+
 
         protected void LoadPrefixesAndSuffixes(string filepath)
         {

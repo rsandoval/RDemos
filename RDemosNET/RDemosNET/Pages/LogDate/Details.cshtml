@@ -1,0 +1,43 @@
+﻿@page
+@model RDemosNET.Pages.LogDate.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>DemoLog</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DemoLog.ApplicationID)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DemoLog.ApplicationID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DemoLog.LogDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DemoLog.LogDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DemoLog.IPAddress)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DemoLog.IPAddress)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DemoLog.LogDetails)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DemoLog.LogDetails)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.DemoLog.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

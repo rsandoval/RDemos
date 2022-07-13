@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Drawing;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using DocumentFormat.OpenXml.Packaging;
@@ -31,6 +33,7 @@ namespace Demo.Models
         public string NotaryName { get; set; }
         public string PersonIDs { get; set; }
         public bool SuccessfullyProcessed { get; set; }
+        public string LastErrorMessage { get; set; }
 
         public string TypeDescription { get { return ContentCharacterizer.GetInstance().GetTypeDescription(Type); } }
 
@@ -43,6 +46,8 @@ namespace Demo.Models
         {
             Filename = FileForUpload.FileName;
             LoadDate = uploadDate;
+
+            SuccessfullyProcessed = true;
 
             if (FileForUpload.ContentType.Contains("pdf"))
             {
@@ -59,6 +64,12 @@ namespace Demo.Models
             else
             {
                 Contents = ReadTextDocument(FileForUpload);
+            }
+            if (String.IsNullOrEmpty(Contents) || Contents.Contains("[EXCEPTION]"))
+            {
+                SuccessfullyProcessed = false;
+                LastErrorMessage = "Error al procesar archivo.";
+                return;
             }
 
             ContentCharacterizer characterizer = ContentCharacterizer.GetInstance();
@@ -86,7 +97,7 @@ namespace Demo.Models
 
         // protected HtmlGenericControl meanConfidenceLabel;
 
-        private string ReadImageDocument(IFormFile fileForUpload)
+        public static string ReadImageDocument(IFormFile fileForUpload)
         {
             string contents = "";
 
@@ -97,7 +108,7 @@ namespace Demo.Models
             return contents;
         }
 
-        private string ReadTextDocument(IFormFile fileForUpload)
+        public static string ReadTextDocument(IFormFile fileForUpload)
         {
             string contents = "";
             using (var reader = new StreamReader(fileForUpload.OpenReadStream()))
@@ -108,12 +119,15 @@ namespace Demo.Models
             return contents;
         }
 
-        private string ReadPdfDocument(IFormFile fileForUpload)
+        public static string ReadPdfDocument(IFormFile fileForUpload)
         {
             string contents = "";
 
             PdfReader docReader = new PdfReader(fileForUpload.OpenReadStream());
             PdfDocument docToRead = new PdfDocument(docReader);
+
+            if (PdfIsOnlyImages(docToRead)) return ReadImagePdfDocument(docToRead);
+
             int numPages = docToRead.GetNumberOfPages();
 
             for (int pageNum = 1; pageNum <= numPages; pageNum++)
@@ -129,7 +143,56 @@ namespace Demo.Models
             return contents.Trim();
         }
 
-        private string ReadWordDocument(IFormFile fileForUpload)
+
+
+        public static bool PdfIsOnlyImages(PdfDocument document)
+        {
+            int numPages = document.GetNumberOfPages();
+            if (numPages <= 0) return false;
+
+            PdfPage pdfPage = document.GetPage(1);
+            PdfStream pageStream = pdfPage.GetContentStream(0);
+            ICollection<PdfName> keys = pageStream.KeySet();
+            string content = PdfTextExtractor.GetTextFromPage(pdfPage);
+
+            return String.IsNullOrEmpty(content.Trim());
+        }
+
+        public static string ReadImagePdfDocument(PdfDocument docToRead)
+        {
+            string processingMessage = "Procesando " + docToRead.GetDocumentInfo().GetTitle() + " con " + docToRead.GetNumberOfPages() + " páginas";
+            try
+            {
+                PdfReader reader = docToRead.GetReader();
+
+                string fullDocumentContents = "";
+                int numberOfPdfObjects = docToRead.GetNumberOfPdfObjects();
+
+                for (int objNum = 1; objNum <= numberOfPdfObjects; objNum++)
+                {
+                    PdfObject obj = docToRead.GetPdfObject(objNum);
+                    if (obj == null || !obj.IsStream()) continue;
+
+                    PdfStream stream = (PdfStream)obj;
+                    if (stream.GetBytes().Length < 10000) continue;
+
+                    MemoryStream memStream = new MemoryStream(stream.GetBytes());
+                    Image rawImage = Image.FromStream(memStream);
+                    ImageDocument imgPage = new ImageDocument(rawImage);
+                    fullDocumentContents += imgPage.GetContents() + "\n";
+                }
+
+                reader.Close();
+
+                return fullDocumentContents;
+            }
+            catch (Exception e)
+            {
+                return "[EXCEPTION]: " + processingMessage + ". " + e.Message;
+            }
+        }
+
+        public static string ReadWordDocument(IFormFile fileForUpload)
         {
             string contents = "";
 

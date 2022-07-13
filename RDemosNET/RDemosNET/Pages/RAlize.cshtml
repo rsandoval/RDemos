@@ -25,7 +25,7 @@
                         <form enctype="multipart/form-data" method="post">
                             <dl>
                                 <dd>
-                                    <textarea name="txtContents" id="txtContents" placeholder="Pegue el comentario aquí..." rows="6"></textarea>
+                                    <textarea name="txtContents" id="txtContents" placeholder="Pegue el comentario aquí..." rows="6">@Model.CommentContents</textarea>
                                 </dd>
                                 <dd>
                                     <input id="cmdProcess" type="submit" class="button special" value="Interpretar" asp-page-handler="ProcessDocument"/>

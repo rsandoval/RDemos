@@ -42,6 +42,9 @@ namespace RDemosNET.Models
         public string GetSentiment()
         {
             Comment comment = new Comment() { ID = "0", Contents = RawContents };
+
+            if (String.IsNullOrEmpty(comment.Contents)) return "neutro";
+
             var prediction = _sentimentPredEngine.Predict(comment);
 
             if (prediction.Sentiment.Contains("-"))
@@ -54,6 +57,9 @@ namespace RDemosNET.Models
         public string GetEmotion()
         {
             Comment comment = new Comment() { ID = "0", Contents = RawContents };
+
+            if (String.IsNullOrEmpty(comment.Contents)) return "neutralidad";
+
             var prediction = _emotionPredEngine.Predict(comment);
 
             switch (prediction.Emotion)
@@ -72,6 +78,9 @@ namespace RDemosNET.Models
         public string GetIntention()
         {
             Comment comment = new Comment() { ID = "0", Contents = RawContents };
+
+            if (String.IsNullOrEmpty(comment.Contents)) return "-";
+
             var prediction = _intentionPredEngine.Predict(comment);
 
             if (prediction.Intention.Contains("-"))
@@ -82,6 +91,9 @@ namespace RDemosNET.Models
         public string GetIrony()
         {
             Comment comment = new Comment() { ID = "0", Contents = RawContents };
+
+            if (String.IsNullOrEmpty(comment.Contents)) return "literal";
+
             var prediction = _ironyPredEngine.Predict(comment);
 
             if (prediction.Irony.Contains("-"))
@@ -92,6 +104,8 @@ namespace RDemosNET.Models
 
         public string GetDescription()
         {
+            if (String.IsNullOrEmpty(RawContents)) return "(vacío)";
+
             string sentiment = GetSentiment();
             string emotion = GetEmotion();
             string intention = GetIntention();
@@ -130,7 +144,7 @@ namespace RDemosNET.Models
         [LoadColumn(0)]
         public string ID { get; set; }
         [LoadColumn(1)]
-        public string Contents { get { return _contents; } set { _contents = value.ToLower(); } }
+        public string Contents { get { return _contents; } set { _contents = TextNormalizer.GetInstance().CleanString(value); } }
         [LoadColumn(2)]
         public string Source { get; set; }
         [LoadColumn(3)]
